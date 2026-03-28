@@ -1,78 +1,50 @@
 // ===== Helpers =====
 const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => document.querySelectorAll(selector);
 
 // ===== Elements =====
 const themeBtn = $("#themeBtn");
-const contactForm = $("#contactForm");
-const formMessage = $("#formMessage");
+const greetingEl = $("#greeting");
+const form = $("#contactForm");
+const formMsg = $("#formMessage");
 
-const searchInput = $("#searchInput");
-const projectCards = $$(".project-card");
-const noResults = $("#noResults");
+// ===== Greeting by time =====
+if (greetingEl) {
+  const hour = new Date().getHours();
+  let msg = "Hello!";
 
-// ===== Theme toggle with localStorage =====
-(function initTheme() {
-  const savedTheme = localStorage.getItem("theme");
+  if (hour >= 5 && hour < 12) msg = "Good morning 🌅";
+  else if (hour >= 12 && hour < 17) msg = "Good afternoon ☀️";
+  else if (hour >= 17 && hour < 22) msg = "Good evening 🌙";
+  else msg = "Good night 🌙";
 
-  if (savedTheme === "dark") {
-    document.body.classList.add("dark");
-  }
-
-  updateThemeIcon();
-})();
-
-function updateThemeIcon() {
-  if (!themeBtn) return;
-
-  if (document.body.classList.contains("dark")) {
-    themeBtn.textContent = "☀️";
-  } else {
-    themeBtn.textContent = "🌙";
-  }
+  greetingEl.textContent = msg;
 }
 
+// ===== Theme toggle =====
 if (themeBtn) {
+  const saved = localStorage.getItem("theme");
+  if (saved === "dark") document.body.classList.add("dark");
+
+  updateThemeIcon();
+
   themeBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark");
-
     const isDark = document.body.classList.contains("dark");
     localStorage.setItem("theme", isDark ? "dark" : "light");
-
     updateThemeIcon();
   });
 }
 
-// ===== Project Search (Dynamic Content) =====
-if (searchInput) {
-  searchInput.addEventListener("input", () => {
-    const query = searchInput.value.trim().toLowerCase();
-    let found = false;
-
-    projectCards.forEach((card) => {
-      const projectText = card.getAttribute("data-project").toLowerCase();
-
-      if (projectText.includes(query)) {
-        card.style.display = "block";
-        found = true;
-      } else {
-        card.style.display = "none";
-      }
-    });
-
-    if (noResults) {
-      if (found) {
-        noResults.style.display = "none";
-      } else {
-        noResults.style.display = "block";
-      }
-    }
-  });
+function updateThemeIcon() {
+  const isDark = document.body.classList.contains("dark");
+  if (themeBtn) {
+    themeBtn.textContent = isDark ? "☀️" : "🌙";
+  }
 }
 
-// ===== Contact Form Validation and Feedback =====
-if (contactForm) {
-  contactForm.addEventListener("submit", (e) => {
+// ===== Contact form =====
+if (form) {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const name = $("#name").value.trim();
@@ -80,20 +52,43 @@ if (contactForm) {
     const message = $("#message").value.trim();
 
     if (!name || !email || !message) {
-      formMessage.textContent = "Please fill in all fields before sending your message.";
-      formMessage.style.color = "red";
+      formMsg.textContent = "Please fill in all fields.";
       return;
     }
 
     if (!email.includes("@") || !email.includes(".")) {
-      formMessage.textContent = "Please enter a valid email address.";
-      formMessage.style.color = "red";
+      formMsg.textContent = "Please enter a valid email.";
       return;
     }
 
-    formMessage.textContent = `Thank you, ${name}! Your message has been received successfully.`;
-    formMessage.style.color = "green";
+    formMsg.textContent = `Thanks, ${name}! Your message is ready.`;
+    form.reset();
+  });
+}
 
-    contactForm.reset();
+// ===== Search filter =====
+const searchInput = $("#searchInput");
+const projects = document.querySelectorAll(".project-card");
+const noResults = $("#noResults");
+
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    const value = searchInput.value.toLowerCase();
+    let visible = 0;
+
+    projects.forEach((project) => {
+      const text = project.getAttribute("data-project");
+
+      if (text.includes(value)) {
+        project.style.display = "block";
+        visible++;
+      } else {
+        project.style.display = "none";
+      }
+    });
+
+    if (noResults) {
+      noResults.style.display = visible === 0 ? "block" : "none";
+    }
   });
 }
