@@ -31,4 +31,4 @@ This project is an improved version of my personal portfolio website from Assign
 AI was used as a support tool to help improve interactivity, refine the structure of the code, and assist with documentation. Full details are provided in `docs/ai-usage-report.md`.
 
 ## Repository Link
-Add your GitHub repository link here before submission.
+https://github.com/dalivxs/202282360-DaliaAlquwaidhi-assignment2
